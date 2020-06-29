@@ -1,0 +1,25 @@
+version: '3.4'
+
+services:
+    umbraco-db:
+        build:
+            context: .\umbraco-db
+        container_name: umbraco-sqldb
+        volumes:
+            - C:\ProgramData\Docker\volumes\umbraco-volume:C:\volumes
+        ports:
+            - "1433:1433"
+        environment:
+            SA_PASSWORD: "StrongP@ssw0rd!"
+            ACCEPT_EULA: "Y"
+            # attach_dbs: "[{'dbName':'umbraco-cms','dbFiles':['C:\\\\volumes\\\\umbraco-cms.mdf','C:\\\\volumes\\\\umbraco-cms_log.ldf']}]"
+        image: microsoft/mssql-server-windows-developer
+        networks:
+            - default
+    umbracodocker:
+        image: ${DOCKER_REGISTRY-}umbracodocker
+        depends_on:
+            - umbraco-db
+        build:
+            context: .\UmbracoDocker
+            dockerfile: Dockerfile
